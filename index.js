@@ -80,7 +80,7 @@ const directoryDestinationPath = 'webExport/';
                 const subFolderFiles = await readdir(sourcePath);
                 await mkdir(destinationPath, { recursive: true });
                 console.log(`files in ${sourcePath}:`, subFolderFiles)
-                createComponentLazyLoadIndexFile(destinationPath, subFolderFiles)
+                createComponentLazyLoadIndexFile(destinationPath, subFolderFiles.filter(item => item != 'index.js'))
                 subFolderFiles.forEach(async (subFile) => {
                     let newSourcePath = path.join(sourcePath, subFile);
                     let newDestinationPath = path.join(destinationPath, subFile);
