@@ -1,25 +1,5 @@
-// console.log("Favour can code")
-// const fs = require("fs")
 import { readFile, writeFile, readdir, stat, mkdir } from "fs/promises"
 import path from 'path';
-
-// writeFile("message.txt", "Hello Favour, How are you", function (err) {
-//     return err ? err : console.log("File has been Saved");
-// })
-
-// const generateName = require("sillyname")
-
-// console.log(`The person name is : ${generateName()}`)
-
-
-// readFile("message.txt", 'utf8', function (err, data) {
-//     if (err) {
-//         throw err
-//     } else {
-//         console.log("File has been read \n", data);
-//         createWebExportFile(data)
-//     }
-// })
 
 function removeLettersInStrAfterPeriod(inputString) {
     // Find the position of the period
