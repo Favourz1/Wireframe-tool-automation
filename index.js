@@ -60,7 +60,11 @@ function createComponentLazyLoadIndexFile(path, filesArr) {
 
 }
 
+
+
+
 const directoryPath = 'components/';
+const directoryDestinationPath = 'webExport/';
 
 (async () => {
     try {
@@ -69,7 +73,7 @@ const directoryPath = 'components/';
 
         files.forEach(async (file) => {
             const sourcePath = path.join(directoryPath, file);
-            let destinationPath = path.join('webExport/', file);
+            let destinationPath = path.join(directoryDestinationPath, file);
             const entryStats = await stat(sourcePath);
 
             if (entryStats.isDirectory()) {
