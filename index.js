@@ -87,7 +87,7 @@ const directoryDestinationPath = 'webExport/';
                     const data = await readFile(newSourcePath, { encoding: 'utf8' });
                     if (subFile === "index.js") {
                         await writeFile(newDestinationPath,
-                            `export {default as rootIndex} from "./rootIndex" \n ${data}`)
+                            `export {default as rootIndex} from "./rootIndex"\n ${data}`)
                     } else {
                         createWebExportFile(data, newDestinationPath, removeLettersInStrAfterPeriod(subFile))
                     }
