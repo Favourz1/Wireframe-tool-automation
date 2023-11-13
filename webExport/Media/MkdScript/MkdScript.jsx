@@ -1,4 +1,4 @@
-export default function UppyFileUpload (){
+export default function MkdScript (){
         return `import React, { useState, useEffect } from "react";
 import Uppy from "@uppy/core";
 import Webcam from "@uppy/webcam";
@@ -18,7 +18,7 @@ import MkdSDK from "Utils/MkdSDK";
 
 const sdk = new MkdSDK();
 
-export default function UppyFileUpload({ companionUrl, setFileProcessedUrl }) {
+export default function MkdScript({ companionUrl, setFileProcessedUrl }) {
   const handleImageChange = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
