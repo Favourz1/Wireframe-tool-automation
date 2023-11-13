@@ -1,5 +1,6 @@
 import { readFile, writeFile, readdir, stat, mkdir, access } from "fs/promises"
 import path from 'path';
+import inquirer from "inquirer";
 
 
 function removeLettersInStrAfterPeriod(inputString) {
@@ -41,13 +42,13 @@ function createComponentLazyLoadIndexFile(path, filesArr) {
 
 }
 
-async function createDirIfNotExist() {
+async function createDirIfNotExist(path) {
     try {
-        await access(directoryDestinationPath);
+        await access(path);
     } catch (error) {
         if (error.code === 'ENOENT') {
             // Directory doesn't exist, so create it
-            await mkdir(directoryDestinationPath, { recursive: true });
+            await mkdir(path, { recursive: true });
         } else {
             // Some other error occurred
             throw error;
@@ -55,12 +56,35 @@ async function createDirIfNotExist() {
     }
 }
 
+async function getUserPrompts() {
+    try {
+        const answers = await inquirer.prompt([
+            {
+                message: "Name of Component folder(Case Sensitive)",
+                name: "sourceDir",
+            },
+            {
+                message: "Name of Folder to Export Component (Would Be Created Non-Existent)",
+                name: "exportDir",
+            },
+        ])
+        return answers
+    } catch (error) {
+        if (error.isTtyError) {
+            // Prompt couldn't be rendered in the current environment
+        } else {
+            // Something else went wrong
+        }
+        console.log("Error from user prompts: ", error)
+    }
+}
 
 
-const directoryPath = 'components/MkdScript';
-const directoryDestinationPath = 'webExport/Media/MkdScript';
 
 (async () => {
+    const userPrompt = await getUserPrompts()
+    const directoryPath = `components/${userPrompt?.sourceDir}`;
+    const directoryDestinationPath = `webExport/${userPrompt?.exportDir}/${userPrompt?.sourceDir}`;
     try {
         const files = await readdir(directoryPath)
         console.log('Files in the components directory:', files);
@@ -68,7 +92,6 @@ const directoryDestinationPath = 'webExport/Media/MkdScript';
         createComponentLazyLoadIndexFile(directoryDestinationPath, files.filter(item => item != 'index.js'))
 
         files.forEach(async (file) => {
-            console.log("dir file = ", file)
             const sourcePath = path.join(directoryPath, file);
             let destinationPath = path.join(directoryDestinationPath, file);
             const entryStats = await stat(sourcePath);
@@ -92,11 +115,9 @@ const directoryDestinationPath = 'webExport/Media/MkdScript';
             } else if (entryStats.isFile()) {
                 const data = await readFile(sourcePath, { encoding: 'utf8' });
                 if (file == 'index.js') {
-                    console.log("is an index.js = ", file)
                     await writeFile(destinationPath,
                         `export {default as rootIndex} from "./rootIndex" \n ${data}`)
                 } else {
-                    console.log("not index.js = ", file)
                     createWebExportFile(data, destinationPath, removeLettersInStrAfterPeriod(file))
                 }
             }
