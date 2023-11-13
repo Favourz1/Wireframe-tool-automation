@@ -14,9 +14,8 @@ To get the best use of this tool component folder structure should be
 .Components
 
 ..ComponentFolder \
-
-> ..index.js \
-> .componentFileName
+ &nbsp; &nbsp; ..index.js \
+ &nbsp; &nbsp; ..componentFileName
 
 To run: (in root directory):
 
@@ -39,9 +38,8 @@ To get the best use of this tool component folder structure should be
 .Components
 
 ..ComponentFolder \
-
-> ..index.js \
-> .componentFileName
+ &nbsp; &nbsp; ..index.js \
+ &nbsp; &nbsp; ..componentFileName
 
 To run: (in root directory):
 
