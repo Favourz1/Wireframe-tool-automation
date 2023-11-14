@@ -64,7 +64,7 @@ async function getUserPrompts() {
                 name: "sourceDir",
             },
             {
-                message: "Name of Folder to Export Component (Would Be Created Non-Existent)",
+                message: "Name of Folder to Export Component (Would Be Created If Non-Existent)",
                 name: "exportDir",
             },
         ])
