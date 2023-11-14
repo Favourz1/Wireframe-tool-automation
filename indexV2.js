@@ -56,6 +56,29 @@ async function createDirIfNotExist(path) {
     }
 }
 
+async function handleV2DirFilesExport(sourcePath, destinationPath) {
+    const subFolderFiles = await readdir(sourcePath);
+    await mkdir(destinationPath, { recursive: true });
+    console.log(`files in ${sourcePath}:`, subFolderFiles)
+    createComponentLazyLoadIndexFile(destinationPath, subFolderFiles)
+    subFolderFiles.forEach(async (subFile) => {
+        let newSourcePath = path.join(sourcePath, subFile);
+        let newDestinationPath = path.join(destinationPath, subFile);
+        const newSourcePathStats = await stat(newSourcePath);
+        if (newSourcePathStats.isDirectory()) {
+            handleV2DirFilesExport(newSourcePath, newDestinationPath)
+        } else if (newSourcePathStats.isFile()) {
+            const data = await readFile(newSourcePath, { encoding: 'utf8' });
+            if (subFile === "index.js") {
+                await writeFile(newDestinationPath,
+                    `export {default as rootIndex} from "./rootIndex"\n ${data}`)
+            } else {
+                createWebExportFile(data, newDestinationPath, removeLettersInStrAfterPeriod(subFile))
+            }
+        }
+    })
+}
+
 async function getUserPrompts() {
     try {
         const answers = await inquirer.prompt([
@@ -80,7 +103,6 @@ async function getUserPrompts() {
 }
 
 
-
 (async () => {
     const userPrompt = await getUserPrompts()
     const directoryPath = `components/${userPrompt?.sourceDir}`;
@@ -97,21 +119,7 @@ async function getUserPrompts() {
             const entryStats = await stat(sourcePath);
 
             if (entryStats.isDirectory()) {
-                const subFolderFiles = await readdir(sourcePath);
-                await mkdir(destinationPath, { recursive: true });
-                console.log(`files in ${sourcePath}:`, subFolderFiles)
-                createComponentLazyLoadIndexFile(destinationPath, subFolderFiles)
-                subFolderFiles.forEach(async (subFile) => {
-                    let newSourcePath = path.join(sourcePath, subFile);
-                    let newDestinationPath = path.join(destinationPath, subFile);
-                    const data = await readFile(newSourcePath, { encoding: 'utf8' });
-                    if (subFile === "index.js") {
-                        await writeFile(newDestinationPath,
-                            `export {default as rootIndex} from "./rootIndex"\n ${data}`)
-                    } else {
-                        createWebExportFile(data, newDestinationPath, removeLettersInStrAfterPeriod(subFile))
-                    }
-                })
+                handleV2DirFilesExport(sourcePath, destinationPath)
             } else if (entryStats.isFile()) {
                 const data = await readFile(sourcePath, { encoding: 'utf8' });
                 if (file == 'index.js') {
