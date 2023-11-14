@@ -1,1 +1,0 @@
-export {default as UppyFileUpload} from "./UppyFileUpload"

@@ -16,6 +16,7 @@ import '@uppy/webcam/dist/style.min.css';
 import MkdSDK from "Utils/MkdSDK";
 
 const sdk = new MkdSDK();
+const blue = "blue"
 
 export default function UppyFileUpload({ companionUrl, setFileProcessedUrl }) {
   const handleImageChange = async (file) => {
@@ -67,7 +68,7 @@ export default function UppyFileUpload({ companionUrl, setFileProcessedUrl }) {
   }, [uppy]);
 
   return (
-    <div>
+    <div className={`fav ${blue}`}>
       <h2>File Uploader</h2>
 
       <Dashboard
