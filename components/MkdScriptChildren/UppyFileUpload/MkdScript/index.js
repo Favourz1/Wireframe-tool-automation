@@ -1,0 +1,1 @@
+export { default as MkdScript } from "./MkdScript"

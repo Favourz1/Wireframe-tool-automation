@@ -40,6 +40,29 @@ function createComponentLazyLoadIndexFile(path, filesArr) {
 
 }
 
+async function handleDirFilesExport(sourcePath, destinationPath) {
+    const subFolderFiles = await readdir(sourcePath);
+    await mkdir(destinationPath, { recursive: true });
+    console.log(`files in ${sourcePath}:`, subFolderFiles)
+    createComponentLazyLoadIndexFile(destinationPath, subFolderFiles.filter(item => item != 'index.js'))
+    subFolderFiles.forEach(async (subFile) => {
+        let newSourcePath = path.join(sourcePath, subFile);
+        let newDestinationPath = path.join(destinationPath, subFile);
+        const newSourcePathStats = await stat(newSourcePath);
+        if (newSourcePathStats.isDirectory()) {
+            handleDirFilesExport(newSourcePath, newDestinationPath)
+        } else if (newSourcePathStats.isFile()) {
+            const data = await readFile(newSourcePath, { encoding: 'utf8' });
+            if (subFile === "index.js") {
+                await writeFile(newDestinationPath,
+                    `export {default as rootIndex} from "./rootIndex"\n ${data}`)
+            } else {
+                createWebExportFile(data, newDestinationPath, removeLettersInStrAfterPeriod(subFile))
+            }
+        }
+    })
+}
+
 
 
 
@@ -57,21 +80,7 @@ const directoryDestinationPath = 'webExport/';
             const entryStats = await stat(sourcePath);
 
             if (entryStats.isDirectory()) {
-                const subFolderFiles = await readdir(sourcePath);
-                await mkdir(destinationPath, { recursive: true });
-                console.log(`files in ${sourcePath}:`, subFolderFiles)
-                createComponentLazyLoadIndexFile(destinationPath, subFolderFiles.filter(item => item != 'index.js'))
-                subFolderFiles.forEach(async (subFile) => {
-                    let newSourcePath = path.join(sourcePath, subFile);
-                    let newDestinationPath = path.join(destinationPath, subFile);
-                    const data = await readFile(newSourcePath, { encoding: 'utf8' });
-                    if (subFile === "index.js") {
-                        await writeFile(newDestinationPath,
-                            `export {default as rootIndex} from "./rootIndex"\n ${data}`)
-                    } else {
-                        createWebExportFile(data, newDestinationPath, removeLettersInStrAfterPeriod(subFile))
-                    }
-                })
+                handleDirFilesExport(sourcePath, destinationPath)
             } else if (entryStats.isFile()) {
                 const data = await readFile(sourcePath, { encoding: 'utf8' });
                 createWebExportFile(data, destinationPath, removeLettersInStrAfterPeriod(subFile))
@@ -81,4 +90,6 @@ const directoryDestinationPath = 'webExport/';
         console.log(error)
     }
 })()
+
+
 
